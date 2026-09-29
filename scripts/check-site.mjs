@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { Script, createContext } from 'node:vm';
 
-const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 if (!inline) throw new Error('Missing inline application script');
 new Script(inline, { filename: 'dist/index.html' });
