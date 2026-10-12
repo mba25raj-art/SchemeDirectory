@@ -6,7 +6,7 @@ const inline = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 if (!inline) throw new Error('Missing inline application script');
 new Script(inline, { filename: 'index.html' });
 for (const file of ['translations-kn.js', 'dashboard.js']) {
-  if (!html.includes(`src="${file}"`)) throw new Error(`Missing ${file} script reference`);
+  if (!html.includes(`src="${file}`)) throw new Error(`Missing ${file} script reference`);
   new Script(readFileSync(new URL(`../${file}`, import.meta.url), 'utf8'), { filename: file });
 }
 
