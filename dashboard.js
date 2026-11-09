@@ -16,7 +16,7 @@ const enUi = {
   empty:'No schemes match these filters. Try a broader search.',
   footer:'This independent directory links only to government websites. It does not accept applications. Application windows and scheme rules can change; confirm them on the linked government portal before acting.',
   selectedSchemes:'Selected schemes', sectorsDetail:'Across five focus sectors', centralSchemes:'Central schemes', centralDetail:'Applicable subject to eligibility', stateSchemes:'Karnataka schemes', stateDetail:'State sources', publishedDates:'Published applicant dates', datesDetail:'Verified application window',
-  renewalOnly:'Renewal only'
+  renewalOnly:'Renewal only', reimbursementClaims:'Reimbursement claims'
 };
 let language = 'en', sector = 'All', level = 'All';
 try { language = localStorage.getItem('scheme-directory-language') === 'kn' ? 'kn' : 'en'; } catch (_) {}
@@ -89,7 +89,8 @@ function draw() {
   const expanded = new Set([...document.querySelectorAll('.scheme-details[open]')].map(el=>el.dataset.name));
   $('#rows').innerHTML = filtered.length ? filtered.map(s=>{
     const st = statusOf(s);
-    const qualifier = s.dateQualifier ? (language==='kn' && s.dateQualifier==='Renewal only' ? ui('renewalOnly') : s.dateQualifier) : '';
+    const qualifierKey = {'Renewal only':'renewalOnly','Reimbursement claims':'reimbursementClaims'}[s.dateQualifier];
+    const qualifier = s.dateQualifier ? (language==='kn' && qualifierKey ? ui(qualifierKey) : s.dateQualifier) : '';
     return `<article class="card"><div><div class="eyebrow"><span class="pill ${s.level==='Karnataka'?'state':''}">${esc(displayLevel(s.level))}</span><span class="pill">${esc(displaySector(s.sector))}</span><span class="pill ${st.cls}">${esc(st.text)}</span>${qualifier?`<span class="pill">${esc(qualifier)}</span>`:''}</div><h4>${esc(tr(s,'name'))}</h4><div class="field"><span class="field-label">${esc(ui('beneficiaries'))}</span><div class="field-value">${esc(tr(s,'beneficiary'))}</div></div><div class="field"><span class="field-label">${esc(ui('benefits'))}</span><div class="field-value">${esc(tr(s,'benefit'))}</div></div><div class="field"><span class="field-label">${esc(ui('criteria'))}</span><div class="field-value">${esc(tr(s,'criteria'))}</div></div><details class="scheme-details" data-name="${esc(s.name)}" ${expanded.has(s.name)?'open':''}><summary>${esc(ui('summary'))}</summary><p>${esc(summaryOf(s))}</p></details><div class="agency">${esc(displayMinistry(s.ministry))} · ${esc(tr(s,'audience'))}</div></div><div class="meta"><span class="label">${esc(ui('applicationDate'))}</span><span class="${s.deadline?'deadline':'muted'}">${esc(tr(s,'date'))}</span>${s.opened?`<span class="muted">${esc(ui('opened'))} ${esc(tr(s,'opened'))}</span><span class="muted">${esc(ui('instituteCheck'))} ${esc(tr(s,'verification'))}</span>`:''}<div class="links">${s.action?`<a href="${esc(s.action)}" target="_blank" rel="noopener noreferrer">${esc(tr(s,'actionText'))} ↗</a>`:''}<a href="${esc(s.source)}" target="_blank" rel="noopener noreferrer">${esc(tr(s,'type'))} ↗</a></div></div></article>`;
   }).join('') : `<div class="empty">${esc(ui('empty'))}</div>`;
 }
@@ -105,3 +106,4 @@ document.addEventListener('click', e=>{
 });
 ['query','ministry','status'].forEach(id=>$('#'+id).addEventListener(id==='query'?'input':'change',draw));
 renderStatic(); draw();
+
